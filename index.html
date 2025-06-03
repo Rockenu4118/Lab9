@@ -1,70 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lab 9</title>
-
+  <title>Lab 9 – Alternate Student Version</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    button {
-      margin: 3px;
-    }
-
-    button:hover {
-      cursor: pointer;
-    }
-
-    #first-num,
-    #second-num {
-      width: 60px;
-    }
-
-    output {
-      border: 1px solid gray;
-      display: block;
-      height: 18px;
-      margin-top: 5px;
-      padding: 5px;
-      width: 240px;
-    }
-
-    main {
-      width: 800px;
-    }
-
-    #error-btns {
-      column-gap: 5px;
-      display: flex;
-      flex-wrap: wrap;
-      margin-top: 30px;
-      row-gap: 5px;
-    }
-
-    #error-btns>* {
-      padding: 8px 2px;
-      width: 122px;
-    }
+    button { margin: 4px; }
+    #first-num, #second-num { width: 50px; }
+    output { display: block; border: 1px solid #aaa; padding: 4px; margin-top: 6px; width: 220px; height: 20px; }
+    main { max-width: 800px; }
+    #error-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 20px; }
+    #error-btns button { padding: 6px 4px; width: 110px; }
   </style>
+<script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+<script>
+  window.TrackJS && TrackJS.install({ 
+    token: "200c5235abb04f7bb5a8ab9128f32ebd",
+    application: "lab9"
+    // for more configuration options, see https://docs.trackjs.com
+  });
+</script>
+  <script>
+    if (window.TrackJS) {
+      TrackJS.install({ token: 'eefa786649024b4e912862c22bff5e0a' });
+    }
+  </script>
 </head>
-
 <body>
   <main>
-    <form>
+    <form id="calc-form">
       <fieldset>
         <legend>Error Calculator</legend>
-        <input name="first-num" id="first-num" />
-        <select name="operator" id="operator">
-          <option>+</option>
-          <option>-</option>
-          <option>*</option>
-          <option>/</option>
+        <input id="first-num" name="first-num" placeholder="num1">
+        <select id="operator" name="operator">
+          <option>+</option><option>-</option><option>*</option><option>/</option>
         </select>
-        <input name="second-num" id="second-num" />
-        <button id="calculate">Calculate</button>
-        <br />
-        <output></output>
+        <input id="second-num" name="second-num" placeholder="num2">
+        <button type="submit">Calculate</button>
+        <output id="calc-output"></output>
       </fieldset>
     </form>
 
@@ -76,33 +49,135 @@
       <button>Console Assert</button>
       <button>Console Clear</button>
       <button>Console Dir</button>
-      <button>Console dirxml</button>
-      <button>Console Group Start</button>
-      <button>Console Group End</button>
+      <button>Console DirXML</button>
+      <button>Group Start</button>
+      <button>Group End</button>
       <button>Console Table</button>
       <button>Start Timer</button>
       <button>End Timer</button>
       <button>Console Trace</button>
-      <button>Trigger a Global Error</button>
+      <button>Trigger Global Error</button>
+      <button>Try/Catch Demo</button>
     </section>
   </main>
 
   <script>
-    let form = document.querySelector('form');
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      let output = document.querySelector('output');
-      let firstNum = document.querySelector('#first-num').value;
-      let secondNum = document.querySelector('#second-num').value;
-      let operator = document.querySelector('#operator').value;
-      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
-    });
+    (function(){
 
-    let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
+      var formEl = document.getElementById('calc-form');
+      var outEl  = document.getElementById('calc-output');
+      formEl.addEventListener('submit', function(e){
+        e.preventDefault();
+        var a = document.getElementById('first-num').value.trim();
+        var b = document.getElementById('second-num').value.trim();
+        var op = document.getElementById('operator').value;
+        try {
+          if (!a || !b) throw { name: 'InputError', message: 'Missing number(s)' };
+          var x = parseFloat(a), y = parseFloat(b);
+          if (isNaN(x) || isNaN(y)) throw new Error('Not a valid number');
+          var res;
+          if (op === '+') res = x + y;
+          else if (op === '-') res = x - y;
+          else if (op === '*') res = x * y;
+          else if (op === '/') {
+            if (y === 0) throw new Error('Divide by zero');
+            res = x / y;
+          } else {
+            throw new Error('Unknown operator');
+          }
+          outEl.textContent = res;
+          console.log('Calc OK:', x, op, y, '=', res);
+        } catch (err) {
+          outEl.textContent = 'Error!';
+          console.error('Calc error:', err);
+        } finally {
+          console.log('Calc attempt done');
+        }
+      });
 
-    // Start your code here
-    // You may move this JS to another file if you wish
+      var person = { name: 'Marvin', age: 2000, city: 'Lyt' };
+      var heroes = [{ name: 'Duncin', age: 3000 }, { name: 'Doakes', age: 3000 }];
+
+      var buttons = document.getElementById('error-btns')
+                    .getElementsByTagName('button');
+      var groupOpen = false;
+      var timerOn = false;
+
+      function bindBtn(idx, fn) {
+        if (buttons[idx]) buttons[idx].addEventListener('click', fn);
+      }
+
+      bindBtn(0, function(){ console.log('Log demo:', person); });
+      bindBtn(1, function(){ console.error('Error demo:', person); });
+      bindBtn(2, function(){ console.count('Clicks'); });
+      bindBtn(3, function(){ console.warn('Warn demo'); });
+      bindBtn(4, function(){ console.assert(false, 'Assert demo failed'); });
+      bindBtn(5, function(){ console.clear(); });
+      bindBtn(6, function(){ console.dir(person); });
+      bindBtn(7, function(){ console.dirxml(document.body); });
+      bindBtn(8, function(){
+        if (!groupOpen) {
+          console.group('My Group');
+          console.log('Inside group');
+          groupOpen = true;
+        } else {
+          console.log('Group already open');
+        }
+      });
+      bindBtn(9, function(){
+        if (groupOpen) {
+          console.groupEnd();
+          groupOpen = false;
+        } else {
+          console.log('No group to end');
+        }
+      });
+      bindBtn(10, function(){ console.table(heroes); });
+      bindBtn(11, function(){
+        if (!timerOn) {
+          console.time('TestTimer');
+          timerOn = true;
+        } else {
+          console.log('Timer already running');
+        }
+      });
+      bindBtn(12, function(){
+        if (timerOn) {
+          console.timeEnd('TestTimer');
+          timerOn = false;
+        } else {
+          console.log('No timer to end');
+        }
+      });
+      bindBtn(13, function(){
+        function foo(){ bar(); }
+        function bar(){ baz(); }
+        function baz(){ console.trace('Trace demo'); }
+        foo();
+      });
+      bindBtn(14, function(){
+        nonExistentFunction();
+      });
+      bindBtn(15, function(){
+        try {
+          var el = document.getElementById('does-not-exist');
+          if (!el) throw new Error('Missing node');
+          console.log(el.textContent);
+        } catch (e) {
+          console.error('Caught in demo:', e);
+        } finally {
+          console.log('Demo finally');
+        }
+      });
+
+      window.addEventListener('error', function(evt){
+        console.warn(
+          'Global caught:', evt.message,
+          '(', evt.filename+':'+evt.lineno, ')'
+        );
+      });
+
+    })();
   </script>
 </body>
-
 </html>
