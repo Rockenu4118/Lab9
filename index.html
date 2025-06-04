@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Lab 9 – Alternate Student Version</title>
+  <title>Lab 9</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     button { margin: 4px; }
@@ -106,7 +106,7 @@
       function bindBtn(idx, fn) {
         if (buttons[idx]) buttons[idx].addEventListener('click', fn);
       }
-
+ 
       bindBtn(0, function(){ console.log('Log demo:', person); });
       bindBtn(1, function(){ console.error('Error demo:', person); });
       bindBtn(2, function(){ console.count('Clicks'); });
